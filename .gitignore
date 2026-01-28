@@ -13,6 +13,14 @@ dist-ssr
 *.local
 *.lock
 
+# Environment files (NEVER commit secrets!)
+.env
+.env.local
+.env.*.local
+
+# Local IPFS storage
+.local-ipfs/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

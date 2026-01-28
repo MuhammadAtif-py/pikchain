@@ -1,7 +1,12 @@
-import { Web3Button } from "@web3modal/react";
+import { useConnect } from "wagmi";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import logo from "../assets/photobloc_klogo.svg";
 
 export default function Welcome() {
+  const { connect } = useConnect({
+    connector: new MetaMaskConnector(),
+  });
+
   return (
     <div className="flex flex-col items-center justify-center w-full h-full ">
       <div className="">
@@ -9,7 +14,7 @@ export default function Welcome() {
           <div className="flex items-center justify-between py-10 md:py-20">
             <div className="w-full md:w-1/2">
               <h1 className="text-4xl font-extrabold text-transparent bg-gradient-to-t from-teal-500 to-fuchsia-500 bg-clip-text hover:bg-gradient-to-b">
-                Photo Block
+                Pikchain
               </h1>
               <h1 className="text-3xl font-bold ">
                 Store your photos securely and privately
@@ -20,7 +25,12 @@ export default function Welcome() {
                 allowing you to share them with friends and family.
               </p>
               <div className="mt-8">
-                <Web3Button icon="hide" />
+                <button
+                  onClick={() => connect()}
+                  className="px-6 py-3 text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-200"
+                >
+                  Connect MetaMask
+                </button>
               </div>
             </div>
             <div className="hidden shadow-xl shadow-slate-400 md:block md:w-4/12 ">

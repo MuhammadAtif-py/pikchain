@@ -1,5 +1,22 @@
 {
-  "CONTRACT_ADDRESS": "0x44b2DB760f8eC864e53518ABf3db92659dE664B1",
-  "SCAN_LINK": "https://hyperspace.filfox.info/en/address/0x44b2DB760f8eC864e53518ABf3db92659dE664B1",
-  "github": "https://github.com/dcryptoniun/"
+  "CONTRACT_ADDRESS": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "SCAN_LINK": "",
+  "github": "https://github.com/dcryptoniun/",
+  "NETWORKS": {
+    "1337": {
+      "CONTRACT_ADDRESS": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "SCAN_LINK": "",
+      "NETWORK_NAME": "Localhost (Hardhat)"
+    },
+    "31337": {
+      "CONTRACT_ADDRESS": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+      "SCAN_LINK": "",
+      "NETWORK_NAME": "Localhost (Hardhat)"
+    },
+    "80002": {
+      "CONTRACT_ADDRESS": "0x928cD9A5a8129D554F98104fF4a62f1D8aD01254",
+      "SCAN_LINK": "https://amoy.polygonscan.com/address/0x928cD9A5a8129D554F98104fF4a62f1D8aD01254",
+      "NETWORK_NAME": "Polygon Amoy"
+    }
+  }
 }

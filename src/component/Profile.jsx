@@ -1,26 +1,52 @@
 import confi from "../contract/Config.json";
 import Abi from "../contract/Abi.json";
-import { useAccount, useContractRead } from "wagmi";
+import { useAccount, useContractRead, useNetwork } from "wagmi";
+import { useState } from "react";
+import { getCache, setCache, CACHE_KEYS } from "../utils/cache";
+import {
+  resolveTargetChainId,
+  isSupportedChain,
+} from "../utils/networks";
 
 export default function Profile() {
   const { address, isConnected } = useAccount();
-  const contractAddress = confi.CONTRACT_ADDRESS;
+  const { chain } = useNetwork();
+  const TARGET_CHAIN_ID = resolveTargetChainId(chain?.id);
+  const networkConfig = confi.NETWORKS?.[TARGET_CHAIN_ID.toString()];
+  const contractAddress = networkConfig?.CONTRACT_ADDRESS || confi.CONTRACT_ADDRESS;
+  const networkReady = isSupportedChain(chain?.id);
 
-  const { data: userName } = useContractRead({
+  // Cache state for fallback
+  const [cachedUsername, setCachedUsername] = useState(() =>
+    getCache(CACHE_KEYS.USERNAME(address, TARGET_CHAIN_ID)) || ''
+  );
+
+  const { data: userName, isError } = useContractRead({
     address: contractAddress,
     abi: Abi,
     functionName: "getUsername",
+    overrides: address ? { from: address } : undefined,
     watch: true,
-    overrides: { from: address },
+    enabled: networkReady && isConnected,
+    chainId: TARGET_CHAIN_ID,
+    onSuccess: (data) => {
+      if (data) {
+        setCache(CACHE_KEYS.USERNAME(address, TARGET_CHAIN_ID), data);
+        setCachedUsername(data);
+      }
+    },
   });
+
+  // Use cache on RPC error
+  const displayName = isError ? cachedUsername : (userName || cachedUsername);
 
   return (
     <div>
       {isConnected && (
         <div>
-          {userName ? (
+          {displayName ? (
             <div className="flex gap-2 p-2 rounded group bg-gradient-to-r hover:bg-gradient-to-l disabled:cursor-not-allowed from-teal-600 to-fuchsia-600">
-              <h1>{userName}</h1>
+              <h1>{displayName}</h1>
               <div className="text-teal-500 group-hover:animate-spin group-hover:text-fuchsia-500">
                 {" "}
                 <svg

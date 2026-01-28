@@ -8,7 +8,7 @@ export default function Dashboard() {
         <div>
           {" "}
           <h1 className="text-4xl font-extrabold text-center text-transparent bg-gradient-to-t from-teal-500 to-fuchsia-500 bg-clip-text hover:bg-gradient-to-b">
-            Photo Block
+            Pikchain
           </h1>
         </div>
         <div className="sticky h-full p-2">
