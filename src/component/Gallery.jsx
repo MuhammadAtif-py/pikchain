@@ -22,15 +22,13 @@ const USE_LOCAL_IPFS = import.meta.env.VITE_USE_LOCAL_IPFS === 'true';
 const GATEWAYS = USE_LOCAL_IPFS 
   ? [
       "http://localhost:3001/ipfs/",  // Local IPFS server first
-      "https://ipfs.io/ipfs/",
-      "https://cloudflare-ipfs.com/ipfs/",
       "https://gateway.pinata.cloud/ipfs/",
+      "https://ipfs.io/ipfs/",
     ]
   : [
-      "https://ipfs.io/ipfs/",
-      "https://cloudflare-ipfs.com/ipfs/",
       "https://gateway.pinata.cloud/ipfs/",
-      "https://gateway.ipfs.io/ipfs/"
+      "https://ipfs.io/ipfs/",
+      "https://nft.storage/ipfs/",
     ];
 
 // Download utility - fetches image blob and triggers browser download
