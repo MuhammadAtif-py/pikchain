@@ -4,7 +4,12 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/pb.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pikchain</title>
+    <title>Pikchain</title>
+    <script>
+      // Polyfills for web3 compatibility (must run before modules)
+      window.global = window.globalThis || window;
+      window.process = window.process || { env: {} };
+    </script>
   </head>
   <body class="dark">
     <div id="root"></div>

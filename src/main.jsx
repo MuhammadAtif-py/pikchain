@@ -1,5 +1,6 @@
+// Polyfills are handled by vite-plugin-node-polyfills
+
 import React, { useEffect } from "react";
-import { Buffer } from 'buffer';
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
@@ -75,8 +76,6 @@ const wagmiClient = createClient({
   webSocketProvider
 });
 
-// Ensure Buffer global (some ethers internal paths rely on it in browser)
-if (!window.Buffer) window.Buffer = Buffer;
 log.info('App bootstrap', { chainId: defaultChain.id, network: defaultChain.name });
 
 function PerfLogger() {

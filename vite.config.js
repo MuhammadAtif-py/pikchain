@@ -1,31 +1,42 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
-// Clean Vite config to fix EventEmitter (CJS) interop & avoid white screen.
+// Production-safe config with proper Node.js polyfills
 export default defineConfig({
-  plugins: [react()],
-  define: {
-    global: 'globalThis',
-    'process.env': {},
-  },
-  resolve: {
-    alias: {
-      buffer: path.resolve(__dirname, 'src/externals/buffer.js')
+  plugins: [
+    react(),
+    nodePolyfills({
+      // Enable specific polyfills needed for web3/ethers
+      include: ['buffer', 'process', 'util', 'stream', 'events'],
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+    }),
+  ],
+  optimizeDeps: {
+    include: ['eventemitter3', 'wagmi', 'ethers', '@wagmi/core'],
+    esbuildOptions: {
+      target: 'es2020',
     }
   },
-  optimizeDeps: {
-    include: ['buffer', 'ethers', 'eventemitter3'],
-  },
   build: {
-    chunkSizeWarningLimit: 900,
+    chunkSizeWarningLimit: 5000,
+    target: 'es2020',
+    minify: 'esbuild',
+    sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          react: ['react','react-dom'],
-          wagmi: ['wagmi','@wagmi/connectors'],
-          ethers: ['ethers']
-        }
+        // Single bundle to avoid initialization order issues
+        inlineDynamicImports: true,
+        format: 'es',
+        hoistTransitiveImports: false,
+      },
+      treeshake: {
+        moduleSideEffects: true,
+        propertyReadSideEffects: false,
       }
     },
     commonjsOptions: {
