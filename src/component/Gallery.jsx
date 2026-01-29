@@ -18,15 +18,14 @@ import useContractReady from '../utils/useContractReady';
 // Check if using local IPFS
 const USE_LOCAL_IPFS = import.meta.env.VITE_USE_LOCAL_IPFS === 'true';
 
-// Use Pinata's direct gateway - where files are actually stored
+// Use proxy to bypass ISP blocking
 const GATEWAYS = USE_LOCAL_IPFS 
   ? [
       "http://localhost:3001/ipfs/",
-      "https://gateway.pinata.cloud/ipfs/",
+      "/api/ipfs-proxy?cid=",  // Serverless proxy
     ]
   : [
-      "https://gateway.pinata.cloud/ipfs/",  // Your files are here
-      "https://rose-giant-bonobo-417.mypinata.cloud/ipfs/", // Alternative Pinata gateway
+      "/api/ipfs-proxy?cid=",  // Vercel serverless function bypasses ISP
     ];
 
 // Download utility - fetches image blob and triggers browser download
