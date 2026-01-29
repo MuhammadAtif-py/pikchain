@@ -22,13 +22,13 @@ const USE_LOCAL_IPFS = import.meta.env.VITE_USE_LOCAL_IPFS === 'true';
 const GATEWAYS = USE_LOCAL_IPFS 
   ? [
       "http://localhost:3001/ipfs/",  // Local IPFS server first
-      "https://ipfs.io/ipfs/",
-      "https://gateway.pinata.cloud/ipfs/",
+      "https://gateway.ipfs.io/ipfs/",
+      "https://ipfs.filebase.io/ipfs/",
     ]
   : [
-      "https://ipfs.io/ipfs/",              // Best CORS support
-      "https://dweb.link/ipfs/",            // Protocol Labs gateway
-      "https://w3s.link/ipfs/",             // Web3.Storage gateway
+      "https://gateway.ipfs.io/ipfs/",       // Most reliable Protocol Labs gateway
+      "https://ipfs.filebase.io/ipfs/",      // Filebase gateway
+      "https://4everland.io/ipfs/",          // 4everland CDN gateway
     ];
 
 // Download utility - fetches image blob and triggers browser download
