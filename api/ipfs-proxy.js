@@ -2,6 +2,15 @@
 // This bypasses client-side ISP blocking
 
 export default async function handler(req, res) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   const { cid } = req.query;
   
   if (!cid) {
@@ -17,22 +26,26 @@ export default async function handler(req, res) {
 
   for (const url of gateways) {
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+
       const response = await fetch(url, {
         headers: {
           'User-Agent': 'Mozilla/5.0',
         },
-        timeout: 5000,
+        signal: controller.signal,
       });
 
+      clearTimeout(timeout);
+
       if (response.ok) {
-        const contentType = response.headers.get('content-type');
-        const buffer = await response.arrayBuffer();
+        const contentType = response.headers.get('content-type') || 'image/jpeg';
+        const arrayBuffer = await response.arrayBuffer();
         
-        res.setHeader('Content-Type', contentType || 'image/jpeg');
+        res.setHeader('Content-Type', contentType);
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-        res.setHeader('Access-Control-Allow-Origin', '*');
         
-        return res.send(Buffer.from(buffer));
+        return res.send(Buffer.from(arrayBuffer));
       }
     } catch (error) {
       console.error(`Gateway ${url} failed:`, error.message);
@@ -40,5 +53,5 @@ export default async function handler(req, res) {
     }
   }
 
-  return res.status(404).json({ error: 'Failed to fetch from all gateways' });
+  return res.status(404).json({ error: 'Failed to fetch from all gateways', cid });
 }
