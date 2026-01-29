@@ -18,20 +18,15 @@ import useContractReady from '../utils/useContractReady';
 // Check if using local IPFS
 const USE_LOCAL_IPFS = import.meta.env.VITE_USE_LOCAL_IPFS === 'true';
 
-// Pinata dedicated gateway (requires auth, less likely to be blocked)
-const PINATA_GATEWAY = `https://${import.meta.env.VITE_PINATA_API_KEY}.mypinata.cloud/ipfs/`;
-
-// Local IPFS gateway (first) + public gateways for fallback
+// Use Pinata's direct gateway - where files are actually stored
 const GATEWAYS = USE_LOCAL_IPFS 
   ? [
-      "http://localhost:3001/ipfs/",  // Local IPFS server first
-      PINATA_GATEWAY,
-      "https://gateway.ipfs.io/ipfs/",
+      "http://localhost:3001/ipfs/",
+      "https://gateway.pinata.cloud/ipfs/",
     ]
   : [
-      PINATA_GATEWAY,                         // Authenticated Pinata gateway (least likely blocked)
-      "https://gateway.ipfs.io/ipfs/",        // Protocol Labs
-      "https://ipfs.filebase.io/ipfs/",       // Filebase
+      "https://gateway.pinata.cloud/ipfs/",  // Your files are here
+      "https://rose-giant-bonobo-417.mypinata.cloud/ipfs/", // Alternative Pinata gateway
     ];
 
 // Download utility - fetches image blob and triggers browser download
