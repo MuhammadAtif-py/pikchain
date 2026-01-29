@@ -67,31 +67,40 @@ const downloadImage = async (cid, gatewayIndex = 0) => {
   }
 };
 
-const IPFSImage = memo(function IPFSImage({ cid, onDownload }) {
+const IPFSImage = memo(function IPFSImage({ cid, onDownload, onLoadError }) {
   const [index, setIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const [failed, setFailed] = useState(false);
   const src = `${GATEWAYS[index]}${cid}`;
 
   // Auto-fallback on timeout
   useEffect(() => {
-    if (loaded || index >= GATEWAYS.length - 1) return;
+    if (loaded || failed || index >= GATEWAYS.length - 1) return;
     const t = setTimeout(() => {
       setIndex(i => {
         const next = i < GATEWAYS.length - 1 ? i + 1 : i;
         if (next !== i) log.warn('Gateway timeout', { cid: cid.slice(0, 8), to: next });
         return next;
       });
-    }, 3000);
+    }, 5000); // Increased timeout for proxy
     return () => clearTimeout(t);
-  }, [index, loaded, cid]);
+  }, [index, loaded, failed, cid]);
 
   const handleError = useCallback(() => {
     if (index < GATEWAYS.length - 1) {
       setIndex(i => i + 1);
       log.warn('Image error fallback', { cid: cid.slice(0, 8) });
+    } else {
+      // All gateways failed - mark as failed and hide
+      setFailed(true);
+      onLoadError?.(cid);
+      log.error('All gateways failed for CID', { cid });
     }
-  }, [index, cid]);
+  }, [index, cid, onLoadError]);
+
+  // Don't render if failed
+  if (failed) return null;
 
   const handleDownload = useCallback(async (e) => {
     e.stopPropagation();
@@ -281,7 +290,10 @@ const Gallery = () => {
             const verifyUrl = address ? `${window.location.origin}/verify?address=${address}&cid=${encodeURIComponent(cid)}&network=${isLocal ? 'localhost' : 'amoy'}` : '';
             return (
               <div key={cid} className="relative flex flex-col items-center gap-2 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                <IPFSImage cid={cid} />
+                <IPFSImage 
+                  cid={cid} 
+                  onLoadError={() => log.warn('Hiding failed CID', { cid })}
+                />
                 {/* Download Image Button - Clear and Separate */}
                 <button
                   onClick={() => downloadImage(cid).then(() => toast.success('Image downloaded!')).catch(() => toast.error('Download failed'))}
