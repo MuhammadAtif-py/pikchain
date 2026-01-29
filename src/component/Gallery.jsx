@@ -99,9 +99,6 @@ const IPFSImage = memo(function IPFSImage({ cid, onDownload, onLoadError }) {
     }
   }, [index, cid, onLoadError]);
 
-  // Don't render if failed
-  if (failed) return null;
-
   const handleDownload = useCallback(async (e) => {
     e.stopPropagation();
     if (downloading) return;
@@ -117,6 +114,11 @@ const IPFSImage = memo(function IPFSImage({ cid, onDownload, onLoadError }) {
       setDownloading(false);
     }
   }, [cid, index, downloading]);
+
+  // Hide completely if all gateways failed
+  if (failed) {
+    return null;
+  }
 
   return (
     <div className="relative group">
