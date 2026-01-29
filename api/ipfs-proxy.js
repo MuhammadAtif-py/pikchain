@@ -21,13 +21,16 @@ export default async function handler(req, res) {
   const gateways = [
     `https://gateway.pinata.cloud/ipfs/${cid}`,
     `https://ipfs.io/ipfs/${cid}`,
-    `https://cloudflare-ipfs.com/ipfs/${cid}`,
+    `https://dweb.link/ipfs/${cid}`,
+    `https://cf-ipfs.com/ipfs/${cid}`,
   ];
+
+  const errors = [];
 
   for (const url of gateways) {
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 8000);
+      const timeout = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch(url, {
         headers: {
@@ -37,6 +40,8 @@ export default async function handler(req, res) {
       });
 
       clearTimeout(timeout);
+
+      errors.push({ url, status: response.status, ok: response.ok });
 
       if (response.ok) {
         const contentType = response.headers.get('content-type') || 'image/jpeg';
@@ -48,10 +53,14 @@ export default async function handler(req, res) {
         return res.send(Buffer.from(arrayBuffer));
       }
     } catch (error) {
-      console.error(`Gateway ${url} failed:`, error.message);
+      errors.push({ url, error: error.message });
       continue;
     }
   }
 
-  return res.status(404).json({ error: 'Failed to fetch from all gateways', cid });
+  return res.status(404).json({ 
+    error: 'Failed to fetch from all gateways', 
+    cid,
+    attempts: errors 
+  });
 }
