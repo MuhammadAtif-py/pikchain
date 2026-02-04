@@ -13,9 +13,18 @@ const ResetPassword = () => {
   const [error, setError] = useState('');
   const [tokenReady, setTokenReady] = useState(false);
 
-  const recoveryType = searchParams.get('type');
-  const accessToken = searchParams.get('access_token');
-  const refreshToken = searchParams.get('refresh_token');
+  // Get parameters from URL hash (Supabase uses hash fragments)
+  const getHashParams = () => {
+    const hash = window.location.hash.substring(1); // Remove #
+    const params = new URLSearchParams(hash);
+    return {
+      type: params.get('type') || searchParams.get('type'),
+      access_token: params.get('access_token') || searchParams.get('access_token'),
+      refresh_token: params.get('refresh_token') || searchParams.get('refresh_token')
+    };
+  };
+
+  const { type: recoveryType, access_token: accessToken, refresh_token: refreshToken } = getHashParams();
 
   const supabaseReady = useMemo(() => Boolean(isConfigured && recoveryType === 'recovery'), [isConfigured, recoveryType]);
 
